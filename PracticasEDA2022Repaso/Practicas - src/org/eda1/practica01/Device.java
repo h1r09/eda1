@@ -12,12 +12,19 @@ public class Device implements Iterable<String>{
 	public Device() {
 		//constructor predeterminado (3 lineas)
 		//...
+		this.name = "noname";
+		this.words = new LinkedList<String>();
+		this.id = ++numDevices;
 	}
 		
 	public Device(String name) {
 		//Si name == null hay que lanzar una excepcion de tipo RuntimeException()
 		//4 lineas
 		//...
+		if (name == null) throw new RuntimeException("El atributo name no puede ser nulo");
+		this.name = name.toLowerCase();
+		this.words = new LinkedList<String>();
+		this.id = ++numDevices;
 	}
 	
 	public static void inicializaNumDevices() {
@@ -37,6 +44,12 @@ public class Device implements Iterable<String>{
 		//1 for()
 		//Haced uso del metodo split(" ") para segmentar la frase en palabras, eliminando los espacios en blanco 
 		//...
+		for (String palabra : msg.toLowerCase().split(" ")) {
+			if (palabra.isEmpty()) continue;
+			if (this.words.contains(palabra)) continue;
+			this.words.add(palabra);
+			
+		}
 	}
 	
 	public boolean contains(String word) {
@@ -48,13 +61,21 @@ public class Device implements Iterable<String>{
 		//Prohibido hacer uso de ListIterator<>
 		//Hacemos uso de indexOf()...
 		//...
+		int index = this.words.indexOf(word1);
+		if (index == -1 ) return false;
+		this.words.remove(word1);
+		if (word2 == null) {
+			this.words.remove(word1);
+		}else {
+			this.words.add(index, word2);
+		}
 		return true;
 	}
 	
 	@Override
 	public String toString() {
 		//1 unica linea
-		return //...
+		return this.id +".- " + this.name;
 	}
 	
 	@Override
@@ -66,6 +87,6 @@ public class Device implements Iterable<String>{
 	public Iterator<String> iterator() {
 		//Iterar sobre Device equivale a iterar sobre la estructura LinkedList<String> words
 		//1 unica linea
-		return //...
+		return this.words.iterator();
 	}
 }

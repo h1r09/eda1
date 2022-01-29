@@ -1,8 +1,10 @@
-	indepackage org.eda1.practica01;
+package org.eda1.practica01;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import javax.management.RuntimeErrorException;
 
 public class User {
 	private String name;
@@ -12,12 +14,17 @@ public class User {
 		//Si name == null se lanza excepcion de tipo RuntimeException()
 		//3 lineas
 		//...
-		
+		if (name == null) throw new RuntimeException("El atributo name no puede ser nulo");
+		this.name = name.trim();
+		this.devices = new ArrayList<Device>();
 	}
 	
 	public void clear() {
 		//1 for()
 		//...
+		for (Device device : devices) {
+			device.clear();
+		}
 		devices.clear();
 	}
 	
@@ -25,6 +32,11 @@ public class User {
 		if (devs == null) return false;
 		//1 for()
 		//...
+		for (Device device : devs) {
+			if (this.devices.contains(device)) 
+				continue;		
+			this.devices.add(device);
+		}
 		
 		return true;
 	}
@@ -47,8 +59,13 @@ public class User {
 			return false;
 		}
 		while (scan.hasNextLine()) {
-			//3 lineas
-			//...
+			line = scan.nextLine();
+			if (line.isEmpty()) {
+				continue;
+			}else {
+				dev.sendMessage(line);
+			}
+			
 		}
 		scan.close();
 		return true;
