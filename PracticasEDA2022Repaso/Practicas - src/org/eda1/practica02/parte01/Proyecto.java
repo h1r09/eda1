@@ -12,14 +12,16 @@ public class Proyecto implements Comparable<Proyecto>, Iterable<String> {
 		//Recordad el uso de trim() y toLowerCase()
 		//2 lineas
 		//...
+		this.proyectoID = proyectoID.trim().toLowerCase();
+		this.ciudades = new BSTree<String>();
 	}
 	
 	public boolean add(String ciudad) {
-		return //...
+		return !ciudades.contains(ciudad.toLowerCase().trim()) ? ciudades.add(ciudad.toLowerCase().trim()) : false;
 	}
 	
 	public boolean remove(String ciudad) {
-		return //...
+		return this.ciudades.remove(ciudad.toLowerCase().trim());
 	}
 
 	public String getProyectoID(){
@@ -35,7 +37,7 @@ public class Proyecto implements Comparable<Proyecto>, Iterable<String> {
 	}
 	
 	public boolean contains(String ciudad){
-		return //...
+		return this.ciudades.contains(ciudad);
 	}
 		
 	@Override
@@ -51,12 +53,12 @@ public class Proyecto implements Comparable<Proyecto>, Iterable<String> {
 	@Override
 	public int compareTo(Proyecto otro) {
 		//Orden natural: proyectoID (ascendente)
-		return //...
+		return this.proyectoID.compareTo(otro.proyectoID);
 	}
 	
 	@Override
 	public Iterator<String> iterator() {
 		//Iterar sobre un proyecto equivale a iterar sobre las ciudades en las que se está desarrollando
-		return //...
+		return this.ciudades.iterator();
 	}
 }
