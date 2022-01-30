@@ -73,6 +73,8 @@ public class User {
 	
 	public boolean sendMessage(Device dev, String msg) {
 		int pos = this.devices.indexOf(dev);
+		if (pos == -1) return false;
+		this.devices.get(pos).sendMessage(msg);
 		//2 lineas
 		//...
 		return true;
@@ -81,12 +83,18 @@ public class User {
 	public void substitute(String word1, String word2) {
 		//Sustituimos en todos los dispositivos...
 		//1 for()
+		for (Device device : devices) {
+			device.substitute(word1, word2);
+		}
 	}
 	
 	public boolean contains(String word) {
 		//Buscamos en todos y cada uno de los dispositivos
 		//1 for()
 		//...
+		for (Device device : devices) {
+			if (device.contains(word)) return true;
+		}
 		return false;
 	}
 	
@@ -94,6 +102,13 @@ public class User {
 		String result = "";
 		//2 for() anidados
 		//...
+		for (Device device : devices) {
+			result += device.toString() + ": ";
+			for (String string : device) {
+				result += string + " "; 
+			}
+			result += "\n";
+		}
 		return result;
 	}
 	
@@ -101,6 +116,12 @@ public class User {
 		ArrayList<String> result = new ArrayList<String>();
 		//2 for() anidados
 		//...
+		for (Device device : devices) {
+			for (String string : device) {
+				if (!result.contains(string)) result.add(string);
+			}
+			
+		}
 		result.sort(null); //que metodo de ordenacion estamos utilizando aqui...
 		return result;
 	}
