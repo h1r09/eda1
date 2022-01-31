@@ -8,13 +8,15 @@ import java.util.Scanner;
 
 import edaAuxiliar.AVLTree;
 
-public class Libro implements Comparable<Libro>{
+public class Libro implements Comparable<Libro>, Iterable<PalabraFrecuencia>{
 	private String libroID; //El identificador de un libro es su titulo
 	private Usuario usuarioPrestamo; //Referencia al usuario que tiene actualmente prestado el libro; null si no está prestado
 	private AVLTree<PalabraFrecuencia> palabrasFrecuencias; //Almacenamos palabras y su frecuencia (evitando tener palabras repetidas)
 	
 	public Libro(String libroID) {
 		//...
+		this.libroID = libroID.trim().toLowerCase();
+		this.palabrasFrecuencias = new AVLTree<PalabraFrecuencia>();
 	}
 	
 	public String getLibroID() {
@@ -23,7 +25,7 @@ public class Libro implements Comparable<Libro>{
 	
 	public boolean getPrestado() {
 		//Determinamos que el libro no está prestado si usuarioPrestamo tiene una direccion nula
-		return //...
+		return (usuarioPrestamo == null) ? false : true;
 	}
 	
 	public Usuario getUsuarioPrestamo() {
@@ -60,7 +62,15 @@ public class Libro implements Comparable<Libro>{
 		PalabraFrecuencia palabraFreqCurrent = null;
 		for (String palabra: palabras) {
 			//Tenemos que buscar cada palabra y ver si esta en el arbol; si esta, se incrementa su frecuencia; en caso contrario se inserta...
-			//...
+			// Hago uso de las 2 estructuras auxiliares para poder ver si existe o no la palabra.
+			palabraFreqAux = new PalabraFrecuencia(palabra);
+			palabraFreqCurrent = this.palabrasFrecuencias.find(palabraFreqAux);
+			if (palabraFreqCurrent == null) {
+				this.palabrasFrecuencias.add(palabraFreqAux);
+			}else {
+				palabraFreqCurrent.incFrecuencia();
+			}
+			
 		}
 	}
 	
@@ -69,6 +79,12 @@ public class Libro implements Comparable<Libro>{
 		PalabraFrecuencia pFOtro = null;
 		//Obtenemos un ArrayList<String> con las palabras en comun de los libros this y otro
 		//1 for()
+		// recorro el otro y busco cada palabra dentro de palabrasFrecuencia. Si existe lo añado al array.
+		for (PalabraFrecuencia palabraFrecuencia : otro) {
+			if (this.palabrasFrecuencias.contains(palabraFrecuencia)) {
+				aux.add(palabraFrecuencia.getPalabra());
+			}
+		}
 		
 		return aux;
 	}
@@ -79,12 +95,19 @@ public class Libro implements Comparable<Libro>{
 		//Obtenemos la distancia euclidea entre los libros this y otro basandonos en las frecuencias de las palabras que tienen en comun
 		//1 for()
 		//...
+		// Comparo las palabras del otro libro y si existe calculo la distancia segun la formula dada.
+		for (PalabraFrecuencia palabraFrecuencia : otro) {
+			pFOtro = this.palabrasFrecuencias.find(palabraFrecuencia);
+			if (pFOtro != null) {
+				sim += Math.pow(pFOtro.getFrecuencia() - palabraFrecuencia.getFrecuencia(), 2);
+			}
+		}
 		return Math.sqrt(sim);
 	}
 		
 	@Override
 	public String toString() {
-		return //...
+		return this.libroID + " -> " + this.palabrasFrecuencias.toString();
 	}
 
 	@Override
@@ -95,12 +118,12 @@ public class Libro implements Comparable<Libro>{
 	@Override
 	public int compareTo(Libro o) {
 		//Orden natural: libroID (ascendente)
-		return //...
+		return this.libroID.compareTo(o.libroID);
 	}
 	
 	@Override
 	public Iterator<PalabraFrecuencia> iterator() {
 		//Iterar sobre libro equivale a iterar sobre las palabras que contiene (palabrasFrecuencia)
-		return //...
+		return this.palabrasFrecuencias.iterator();
 	}
 }

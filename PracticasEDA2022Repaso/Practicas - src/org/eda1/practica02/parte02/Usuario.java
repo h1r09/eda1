@@ -10,6 +10,8 @@ public class Usuario implements Comparable<Usuario>, Iterable<Libro> {
 
 	public Usuario(String usuarioID) {
 		//...
+		this.usuarioID = usuarioID.trim().toLowerCase();
+		this.registroPrestamos = new AVLTree<Libro>();
 	}
 	
 	public String getUsuarioID() {
@@ -17,7 +19,8 @@ public class Usuario implements Comparable<Usuario>, Iterable<Libro> {
 	}
 	
 	public boolean registrarPrestamo(Libro book) {
-		return  //...
+		// Añado al AVLTree el libro que me pasan 
+		return  this.registroPrestamos.add(book);
 	}
 	
 	public String getRegistroPrestamos() {
@@ -40,12 +43,12 @@ public class Usuario implements Comparable<Usuario>, Iterable<Libro> {
 	@Override
 	public int compareTo(Usuario o) {
 		//Orden natural: criterio único usuarioID (ascendente)
-		return //...
+		return this.usuarioID.compareTo(o.usuarioID);
 	}
 	
 	@Override
 	public Iterator<Libro> iterator() {
 		//Iterar sobre un usuario equivale a iterar sobre su historico de libros prestados (registroPrestamos)
-		return //...
+		return this.registroPrestamos.iterator();
 	}
 }

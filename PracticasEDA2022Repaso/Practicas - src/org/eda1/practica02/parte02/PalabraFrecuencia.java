@@ -7,6 +7,9 @@ public class PalabraFrecuencia implements Comparable<PalabraFrecuencia>{
 	public PalabraFrecuencia(String palabra) {
 		//Cuando creamos una palabra, su frecuencia es 1
 		//...
+		this.palabra = palabra.trim().toLowerCase();
+		this.frecuencia = 1;
+		
 	}
 	
 	public void incFrecuencia() {
@@ -29,11 +32,11 @@ public class PalabraFrecuencia implements Comparable<PalabraFrecuencia>{
 	@Override
 	public int compareTo(PalabraFrecuencia o) {
 		//Orden natural: palabra (ascendente)
-		return //...
+		return this.palabra.compareTo(o.palabra);
 	}
 
 	@Override
 	public String toString() {
-		return //...
+		return palabra +" <" + frecuencia + ">";
 	}
 }
