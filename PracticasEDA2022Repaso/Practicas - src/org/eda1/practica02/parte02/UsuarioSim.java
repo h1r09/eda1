@@ -19,7 +19,7 @@ public class UsuarioSim implements Comparable<UsuarioSim>{
 	@Override
 	public int compareTo(UsuarioSim o) {
 		//Orden natural: Criterio 1: distancia (ascendente); Criterio 2: nombre (ascendente)
-		int cmp = //...
-		return cmp == 0 ? //...
+		int cmp = Double.compare(this.distancia, o.distancia);		
+		return cmp == 0 ? this.usuarioID.compareTo(o.usuarioID) : cmp;
 	}
 }
