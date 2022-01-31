@@ -12,20 +12,26 @@ public class AVLTreePair<K extends Comparable<K>,V> {
 	public boolean put(K key, V value) {
 		//Si clave no existe, se inserta el par (key, value)
 		//Si clave existe --> el valor antiguo se sustituye por value (actualizacion)
-		Pair<K,V> par = //...
+		Pair<K,V> par = tree.find(new Pair<K, V>(key, value));
 		//...
+		if (par == null) {
+			Pair <K, V> pair = new Pair<K, V>(key, value);
+			tree.add(pair);
+		}else {
+			par.setValue(value);
+		}
 		return par == null;
 	}
 	
 	public V get(K key) {
 		//Devolvemos el valor asociado a la clave key
 		//null si key no existe
-		Pair<K,V> aux =//...
-		return aux == null ?  ...
+		Pair<K,V> aux = tree.find(new Pair<K, V>(key, null));
+		return aux == null ?  null : aux.getValue();
 	}
 	
 	public boolean containsKey(K key) {
-		return //...
+		return get(key) != null;
 	}
 	
 	public void clear() {
@@ -44,6 +50,9 @@ public class AVLTreePair<K extends Comparable<K>,V> {
 		ArrayList<K> resultado  = new ArrayList<K>();
 		//Devolvemos el conjunto de claves
 		//1 for()
+		for (Pair<K,V> pair : tree) {
+			resultado.add(pair.getKey());
+		}
 		//...	
 		return resultado;
 	}
@@ -53,6 +62,9 @@ public class AVLTreePair<K extends Comparable<K>,V> {
 		//Devolvemos el conjunto de valores
 		//1 for()
 		//...
+		for (Pair<K,V> pair : tree) {
+			resultado.add(pair.getValue());
+		}
 		return resultado;
 	}
 	
@@ -61,11 +73,14 @@ public class AVLTreePair<K extends Comparable<K>,V> {
 		//Devolvemos el conjunto de pares
 		//1 for()
 		//...
+		for (Pair<K,V> pair : tree) {
+			resultado.add(pair);
+		}
 		return resultado;
 	}
 
 	@Override
 	public String toString() {
-		return //... 
+		return entrySet().toString();
 	}
 }
