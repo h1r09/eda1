@@ -28,15 +28,25 @@ public class Articulo implements Comparable<Articulo>, Iterable<Entry<String, In
 		this.texto.clear();
 	}
 	
+	/**
+	 * obtengo la frecuencia de la palabra, que Trimeo y paso a minúsculas.
+	 * @param word
+	 * @return -1 o la frecuencia
+	 */
 	public int getFrecuencia(String word) {
-		Integer freq = //...
-		return //... 
+		Integer freq = texto.get(word.trim().toLowerCase());
+		return freq == null ? -1 : freq;
 	}
 	
+	/**
+	 * Recorro los values de texto, los contadores y los voy sumando.
+	 * @return suma de frecuencias
+	 */
 	public int getSumaFrecuencias() {
 		int suma = 0;
-		//1 for()
-		//...
+		for (Integer contador : texto.values()) {
+			suma += contador;
+		}
 		return suma;
 	}
 	
@@ -54,13 +64,27 @@ public class Articulo implements Comparable<Articulo>, Iterable<Entry<String, In
 		}
 	}
 	
+	/**
+	 * Recorro el array de lineas, si la linea está vacia continuo.
+	 * recorro la linea y lo paso a minúsculas y spliteo por la cadena dada. Añado el trim porque en el split no me quita el espacio en blanco
+	 * Si es un stopWord o la palabra está vacia continuo.
+	 * si la palabra es nueva la inicializo a 1, sino le sumo 1 a su frecuencia.
+	 * @param lineas
+	 * @return True is successful
+	 */
 	public boolean add(String...lineas) {
 		if (lineas == null) return false;
 		Integer cont = null;
-		//2 for() anidados
-		//Atencion al uso de la expresion regular "[0123456789/(/)+-;,.¿?¡! ]+"
-		//Atencion (tambien) al uso del metodo Auxiliar.isStopWord() --> ignoramos las palabras que se consideran stopWords
 		
+		for (String linea : lineas) {
+			if(linea.isEmpty()) continue;
+			for (String palabra : linea.toLowerCase().split("[0123456789/(/)+-;,.¿?¡! ]+")) {
+				if(palabra.isEmpty() || Auxiliar.isStopWord(palabra.trim())) continue;
+				cont = this.texto.get(palabra);
+				cont = cont == null ? 0 : cont;
+				texto.put(palabra, cont+1);
+			}
+		}
 		return true;
 	}
 	
@@ -68,26 +92,50 @@ public class Articulo implements Comparable<Articulo>, Iterable<Entry<String, In
 		this.texto.remove(palabra);
 	}
 	
+	/**
+	 * Fusiono 2 articulos sumando las frecuncias de las palabras coincidentes.
+	 * recorro el otro articulo y en contador guardo la frecuencia de cada palabra
+	 * si no existe le pongo el valor de la palabra, si existe sumo ambas.
+	 * @param otro
+	 * @return aux
+	 */
 	public Articulo fusionar(Articulo otro) {
 		Articulo aux = new Articulo(this.articuloID + "+" + otro.articuloID);
 		Integer cont = null;
-		//1 for()
-		//...
-		
+		aux.texto.putAll(this.texto);
+		for (Entry<String, Integer> palabra : otro) {
+			cont = aux.getFrecuencia(palabra.getKey());
+			cont = cont == -1 ? palabra.getValue() : cont + palabra.getValue();
+			aux.texto.put(palabra.getKey(), cont);
+		}
 		return aux;
 	}
 	
+	/**
+	 * compruebo que palabra 1 existe, compruebo si palabra2 es null y si lo es borro la palabra1.
+	 * obtengo las frecuencia de ambas palabras, compruebo si contw2 es null o tiene valor > 0.
+	 * Añado la palabra2 sumando las frecuencias de ambas y borro palabra1.
+	 * @param palabra1
+	 * @param palabra2
+	 * @return True if successful
+	 */
 	public boolean sustituir(String palabra1, String palabra2) {
 		Integer contW1 = null;
 		Integer contW2 = null;
 		if (palabra1 == null) return false;
-		//Reglas de sustitucion
-		//Si palabra1 no existe --> return false
-		//Si palabra2 es igual a null --> borramos palabra1 y return true
-		//Sustituimos palabra1 por palabra2 teniendo en cuenta que palabra2 puede que sea (o no) una palabra que exista en el articulo
-		//Es decir, habra que tener en cuenta que contador(palabra2) puede ser null o igual a un valor > 0
-		//Habra que actualizar el contador de palabra1, de manera que contador(palabra1) = contador(palabra1) + contador(palabra2)
-		//...
+		if (!this.texto.containsKey(palabra1)) return false;
+		if (palabra2 == null) {
+			texto.remove(palabra1);
+			return true;
+		}
+		
+		contW1 = texto.get(palabra1);
+		contW2 = texto.get(palabra2);
+		
+		contW2 = contW2 == null ? 0 : contW2;
+		
+		texto.put(palabra2, contW1+contW2);
+		texto.remove(palabra1);
 		return true;
 	}
 	
@@ -96,15 +144,21 @@ public class Articulo implements Comparable<Articulo>, Iterable<Entry<String, In
 		return this.articuloID + ": " + this.texto.toString();
 	}
 	
+	/*
+	 * Devuelve un iterator de tipo entry de <String, Integer>
+	 */
 	@Override
 	public Iterator<Entry<String, Integer>> iterator() {
-		//Iterar sobre un articulo equivale a iterar sobre el conjunto de pares (palabra, frecuencia) que contiene
-		return //... 1 sola linea...
+		return this.texto.entrySet().iterator();
 	}
 	
+	/**
+	 * comparo el objeto con el otro especificado
+	 * @param o
+	 * @return -1,0,1 menor, igual, mayor
+	 */
 	@Override
 	public int compareTo(Articulo otro) {
-		//Orden natural: articuloID (ascendente)
-		return //...
+		return this.articuloID.compareTo(otro.articuloID);
 	}
 }

@@ -9,16 +9,25 @@ import java.util.Objects;
 public class HashTag {
 	private String hashTagID;
 	private String paisID;
-	private boolean isTrendingTopic; //No lo vamos a utilizar...por ahora...
+	private boolean isTrendingTopic;
 
+	/**
+	 * Constructor donde paso el hastTagID a minuscula y le quito "#" El pais lo
+	 * paso a minusculas tambien.
+	 * 
+	 * @param hashTagID
+	 * @param pais
+	 */
 	public HashTag(String hashTagID, String pais) {
-		//...
+		this.hashTagID = hashTagID.toLowerCase().replace("#", "");
+		this.paisID = pais.toLowerCase();
+
 	}
-	
+
 	public void setIsTrendingTopic(boolean flag) {
 		this.isTrendingTopic = flag;
 	}
-	
+
 	public boolean getIsTrendingTopic() {
 		return this.isTrendingTopic;
 	}
@@ -26,25 +35,31 @@ public class HashTag {
 	public String getPaisID() {
 		return this.paisID;
 	}
-	
+
 	public String getHashTagID() {
 		return this.hashTagID;
 	}
-	
+
+	/**
+	 * MEdiante Objects.hash() creo el hash de hastagID y paisID
+	 */
 	@Override
 	public int hashCode() {
-		return //1 sola linea --> investigad el uso del metodo estatico Objects.hash(Objects...args);
+		return Objects.hash(hashTagID, paisID);
 	}
 
 	@Override
 	public boolean equals(Object o) {
-		//Atencion a este metodo --> equals debe ser coherente con hashCode()
 		return this.hashCode() == ((HashTag) o).hashCode();
 	}
 
+	/**
+	 * Contruyo el toString para que coincida con la salida esperada. Si es
+	 * trendingTopic le añado "****"
+	 */
 	@Override
 	public String toString() {
-		return //...
+		return (this.isTrendingTopic ? "****" : "") + this.hashTagID + " <" + this.paisID + ">";
 	}
 
 	public static void main(String[] args) {
@@ -52,7 +67,7 @@ public class HashTag {
 		HashTag hashTag02 = new HashTag("SaveTheWorld", "es");
 		HashTag hashTag03 = new HashTag("#MacBookPro", "it");
 		HashTag hashTag04 = new HashTag("MacBookPro", "fr");
-		
+
 		assertTrue(hashTag01.equals(hashTag02));
 		assertEquals("savetheworld <es>", hashTag01.toString());
 		assertEquals("macbookpro <it>", hashTag03.toString());
@@ -63,7 +78,7 @@ public class HashTag {
 
 		hashTag04.setIsTrendingTopic(true);
 		assertEquals("****macbookpro <fr>", hashTag04.toString());
-		
+
 		System.out.println("TODO OK!!!!!");
 
 		hashTag01 = hashTag02 = hashTag03 = hashTag04 = null;

@@ -12,7 +12,7 @@ import edaAuxiliar.Graph;
 
 public class Network<Vertex extends Comparable<Vertex>> implements Graph<Vertex>, Iterable<Vertex> {
 
-	private boolean directed; 	// directed = false (unDirected), directed = true (DiGraph)
+	private boolean directed; 	
 	
 	private TreeMap<Vertex, TreeMap<Vertex, Double>> adjacencyMap; 
 	
@@ -21,7 +21,7 @@ public class Network<Vertex extends Comparable<Vertex>> implements Graph<Vertex>
 		this.adjacencyMap = new TreeMap<Vertex, TreeMap<Vertex, Double>>();
 	}
 	
-   	public Network(boolean uDOrD) { //uDOrD == unDirected Or Directed
+   	public Network(boolean uDOrD) { 
   		this.directed = uDOrD;
 		this.adjacencyMap = new TreeMap<Vertex, TreeMap<Vertex, Double>>();
 	} 
@@ -67,11 +67,15 @@ public class Network<Vertex extends Comparable<Vertex>> implements Graph<Vertex>
     	return this.adjacencyMap.containsKey(v1) && this.adjacencyMap.get(v1).containsKey(v2);
   	} 
 
+  	/**
+  	 * Devolvemos -1 si neighbors es null o si no existe el vertice (v1,v2);
+  	 * en caso contrario devolvemos el peso asociado a la arista (v1,v2).
+  	 */
   	@Override
   	public double getWeight (Vertex v1, Vertex v2) {
   		TreeMap<Vertex, Double> neighbors = this.adjacencyMap.get(v1);
-  		return //1 sola linea. Devolvemos -1 si neighbors es null o si no existe el vertice (v1,v2); en caso contrario devolvemos el peso asociado a la arista (v1,v2). 2 operadores ternarios anidados??
-   	} 
+  		return neighbors == null ? -1 : neighbors.get(v2) == null ? -1 : neighbors.get(v2);
+  	} 
 
   	@Override
   	public double setWeight (Vertex v1, Vertex v2, double w) {
@@ -103,11 +107,16 @@ public class Network<Vertex extends Comparable<Vertex>> implements Graph<Vertex>
     	return true;
   	} 
 
+  	/**
+  	 * Elimino cada arista recorriendo los valores del mapa
+  	 * Por ultimo elimino del mapa el vertice.
+  	 */
   	public boolean removeVertex(Vertex vertex) {
         if (!containsVertex(vertex)) return false;
 
-        //1 for()
-        //... 
+        for (TreeMap<Vertex, Double> mapa: adjacencyMap.values()) {
+        	mapa.remove(vertex);
+        }
         this.adjacencyMap.remove(vertex);
         return true;
    	} 
@@ -137,9 +146,14 @@ public class Network<Vertex extends Comparable<Vertex>> implements Graph<Vertex>
   	 *  @return a LinkedList of the vertices that are neighbors of v.
    	 */
 
+  	/**
+  	 * null si neighbors es null
+  	 * devuelve el conjunto de adyacentes (vecinos) en caso contrario.
+  	 */
   	public TreeSet<Vertex> getNeighbors(Vertex v) {
   		TreeMap<Vertex, Double> neighbors = this.adjacencyMap.get(v);
-  		return // null si neighbors es null; el conjunto de adyacentes (vecinos) en caso contrario.
+  		return neighbors == null ? null : new TreeSet<>(neighbors.keySet());
+  				
   	}
 
   	@Override
@@ -147,7 +161,12 @@ public class Network<Vertex extends Comparable<Vertex>> implements Graph<Vertex>
     	return this.adjacencyMap.toString();
   	} 
 
-  	/////////Dijkstra
+  	
+	/*
+	 * 
+	 * Dijkstra
+	 * 
+	 */
 	
 	private TreeMap<Vertex, Vertex> Dijkstra(Vertex source, Vertex destination) {
   		final double INFINITY = Double.MAX_VALUE;
@@ -226,39 +245,54 @@ public class Network<Vertex extends Comparable<Vertex>> implements Graph<Vertex>
     	}
     	path = new ArrayList<Vertex>();
     	pila = new Stack<Vertex>();
-    	
-    	//Para que queremos la pila?
 		
     	pila.push(destination);
 		while (!pila.peek().equals(source)) {
 			pila.push(salidaDijkstra.get(pila.peek()));
 		}
 		while (!pila.isEmpty()) {
-			//...
+			path.add(pila.pop());
 		}
 		return path;
 	}
 	
+	/**
+	 * lista con el punto de partida al destino midiendo la distancia entre cada punto.
+	 * Obteniendo tambien el total de la distancia.
+	 * bucle donde recorro desde la posicion 1 hasta el tamaño del recorrido calculando las distancias 
+	 * @param source
+	 * @param destination
+	 * @return
+	 */
 	public ArrayList<String> getDijkstraWithDistance(Vertex source, Vertex destination){
 		ArrayList<Vertex> path = getDijkstra(source, destination);
 		ArrayList<String> pathWithDistance = null;
 		double suma = .0;
+		double distancia = .0;
 		if (path == null) return null;
 		
 		pathWithDistance = new ArrayList<String>();
 		
 		pathWithDistance.add(path.get(0) + "=0.0");
-		//1 for()
-		//...
+		
+		for (int i = 1; i < path.size(); i++) {
+			distancia = getWeight(path.get(i-1), path.get(i));
+			pathWithDistance.add(path.get(i)+"="+ distancia);
+			suma += distancia;
+		}
+		
 		pathWithDistance.add(0, String.valueOf(suma));
     	return pathWithDistance; 
     }
  
-  	//toArray() methods
-	
-	//DF = depthFirst (en profundidad)
-	//BF = breadthFirst (en anchura)
+  	/*
+  	 * 
+  	 * toArray() methods		
+  	 * DF = depthFirst (en profundidad)	
+  	 * BF = breadthFirst (en anchura) 
+  	 */
   
+	
   	public ArrayList<Vertex> toArrayDFRecursive(Vertex start) {
   		if (!containsVertex(start)) return null;
   		ArrayList<Vertex> result = new ArrayList<Vertex>();
@@ -280,8 +314,15 @@ public class Network<Vertex extends Comparable<Vertex>> implements Graph<Vertex>
 		}
 	}
 	
+	/**
+	 * Primero compruebo que start pertenezca a la red con 
+	 * if (!containsVertex(start)) return null;
+	 * 
+	 * @param start
+	 * @return
+	 */
 	public ArrayList<Vertex> toArrayDF(Vertex start) {
-		//... que pasa si el vertice start no pertenece a la red
+		if (!containsVertex(start)) return null;
 		ArrayList<Vertex> resultado = new ArrayList<Vertex>();
 		Stack<Vertex> stack = new Stack<Vertex>();
 		TreeMap<Vertex, Boolean> visited = new TreeMap<Vertex, Boolean>();
@@ -303,29 +344,66 @@ public class Network<Vertex extends Comparable<Vertex>> implements Graph<Vertex>
 		return resultado;
 	}
 	
+	/**
+	 * Exactamente igual que toArrayDF pero haciendo uso de una cola
+	 * declaro una LinkedList de tipo vertex.
+	 * @param start
+	 * @return
+	 */
 	public ArrayList<Vertex> toArrayBF(Vertex start) {
 		if (!containsVertex(start)) return null;
 		ArrayList<Vertex> resultado = new ArrayList<Vertex>();
-		//Exactamente igual que toArrayDF pero haciendo uso de una cola...
+		LinkedList<Vertex> cola = new LinkedList<Vertex>();
+	
+		TreeMap<Vertex, Boolean> visited = new TreeMap<Vertex, Boolean>();
+		for (Vertex vertex : this.adjacencyMap.keySet()) {
+			visited.put(vertex, false);
+		}
+		Vertex current;
+		cola.add(start);
+		while (!cola.isEmpty()) {
+			current = cola.removeFirst();
+			if (visited.get(current)) continue;
+			visited.put(current, true);
+			resultado.add(current);
+			for (Vertex to : this.adjacencyMap.get(current).keySet()) {
+    			if (visited.get(to)) continue;
+      			cola.add(to);
+			}
+		}
 		return resultado;
 	}
 	
+	/*
+	 * Iteradores
+	 */
 	
- 	////Iteradores
-	
+	/**
+	 * Iterador sobre el conjunto de claves --> orden lexicografico
+	 */
 	@Override
-	public Iterator<Vertex> iterator() { //Iterador sobre el conjunto de claves --> orden lexicografico
+	public Iterator<Vertex> iterator() { 
         return this.adjacencyMap.keySet().iterator();
   	} 
 
-  	public ArrayList<Vertex> breadthFirstIterator (Vertex v) { //Iterador en anchura a partir de v
+  	/**
+  	 * Iterador en anchura a partir de v
+  	 * @param v
+  	 * @return
+  	 */
+  	public ArrayList<Vertex> breadthFirstIterator (Vertex v) { 
     	if (!adjacencyMap.containsKey(v)) return null;
     	return this.toArrayBF(v);
   	} 
 
 
-  	public ArrayList<Vertex> depthFirstIterator (Vertex v) { //Iterador en profundidad a partir de v
+  	/**
+  	 * Iterador en profundidad a partir de v
+  	 * @param v
+  	 * @return
+  	 */
+  	public ArrayList<Vertex> depthFirstIterator (Vertex v) { 
     	if (!adjacencyMap.containsKey (v)) return null;
-    	return //...
+    	return this.toArrayDF(v);
   	} 
- } // class Network
+ } 
